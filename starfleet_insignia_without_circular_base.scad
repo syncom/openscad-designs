@@ -17,6 +17,7 @@ module leaf2(scale){
     }    
 }
 
+// The insignia is one leaf minus another
 module insignia_top(scale) {
     difference() {
         difference() {
@@ -30,7 +31,7 @@ module insignia_top(scale) {
     }
 }
 
-// The union of the inner part and a circular base, minus a hole
+// The inner part, minus a hole
 module starfleet_insignia(scale) {
     difference() {
         insignia_top(scale);
