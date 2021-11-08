@@ -22,4 +22,4 @@ with ABS. My default printer set-up is:
 - Travel rate: 140 mm/s
 - Layer height: 0.2mm
 - Temperature: 215 C
-
+- Bed temperature: 65 C
