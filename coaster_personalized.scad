@@ -1,4 +1,4 @@
-use <fonts/ZCOOLXiaoWei-Regular.attf>;
+use <fonts/ZCOOLXiaoWei-Regular.ttf>;
 
 $fn = 30;
 
