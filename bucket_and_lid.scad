@@ -23,9 +23,10 @@ module bucket_and_lid(radius, height, thickness) {
 
     sphere_inner_radius = radius - thickness;
     // use Pythagorean theorem here
+    lid_outer_radius = sqrt(radius * radius - height * height / 4);
     lid_inner_radius = sqrt(sphere_inner_radius * sphere_inner_radius - height * height / 4.0);
     // lid
-    translate([radius * 2, 0, thickness]) bucket_lid(radius, lid_inner_radius, thickness);
+    translate([radius + lid_outer_radius, 0, thickness]) bucket_lid(lid_outer_radius, lid_inner_radius, thickness);
 }
 
 
