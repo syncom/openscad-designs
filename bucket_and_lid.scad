@@ -1,69 +1,74 @@
 /*
   Bucket and lid
+  Parameters:
+  radius - Outer radius of the bucket
+  height - Full height of the bucket without lid
+  thickness - thickness of the bucket
+  
 */
 
-thickness = 5; // 5mm
-outer_radius = 50; // 50mm
-inner_radius = outer_radius - thickness;
-half_drum_height = 0.6 * outer_radius;
-drum_height = 2 * half_drum_height;
-// use Pythagorean theorem here
-bottom_radius = 0.8 * outer_radius;
-/* lid measurements */
-lid_outer_radius = bottom_radius;
-// make inner radius slightly smaller to account for error
-lid_inner_radius = 0.8 * inner_radius - 1;
-lid_outer_height = 5;
-lid_inner_height = 5;
-lid_text_depth = 3;
+// Bucket globals
+thickness_bkt = 5; // 5mm
+outer_radius_bkt = 50; // 50mm
+height_bkt = 2 * 0.6 * outer_radius_bkt;
+// lid globals
+lid_text_depth = 4;
 lid_text_id = "SHANG";
 lid_text_size = 10;
 font_name = "Liberation Sans";
 
-module hollow_ball() {
-    difference() {
-        sphere(r = outer_radius, $fa = 6);
-        sphere(r = inner_radius, $fa = 6);
+module bucket_and_lid(radius, height, thickness) {
+    // bucket without lid
+    translate([0, 0, height / 2]) bucket_without_lid(radius, height, thickness);
+
+    sphere_inner_radius = radius - thickness;
+    // use Pythagorean theorem here
+    lid_inner_radius = sqrt(sphere_inner_radius * sphere_inner_radius - height * height / 4.0);
+    // lid
+    translate([radius * 2, 0, thickness]) bucket_lid(radius, lid_inner_radius, thickness);
+}
+
+
+module bucket_without_lid(radius0, height0, thickness0) {
+
+    module drum(radius_dm, height_dm, thickness_dm) {
+        module hollow_ball(rds, thk) {
+            difference() {
+                sphere(r = rds, $fa = 6);
+                sphere(r = rds - thk, $fa = 6);
+            }
+        }
+
+       intersection() {
+           hollow_ball(radius_dm, thickness_dm);
+           cylinder(h = height_dm, r = radius_dm, center = true);
+       }
+   }
+
+    module bottom(radius_btm, thickness_btm) {
+        translate([0, 0, -height0 / 2])
+          cylinder(h = thickness_btm, r = radius_btm);
     }
-}
+    // use Pythagorean theorem here
+    bottom_radius = sqrt(radius0 * radius0 - (height0 * height0) / 4);
 
-module drum() {
-    intersection() {
-        hollow_ball();
-        cylinder(h = drum_height, r = outer_radius, center = true);
-    }
-}
-
-module bottom() {
-    translate([0, 0, -half_drum_height])
-      cylinder(h = thickness, r = bottom_radius);
-}
-
-module bucket_without_lid() {
     union() {
-        drum();
-        bottom();
+        drum(radius0, height0, thickness0);
+        bottom(bottom_radius, thickness0);
     }
+
 }
 
-module bucket_lid() {
+module bucket_lid(outer_radius, inner_radius, thickness) {
     difference() {
         union() {
-            cylinder(h = lid_outer_height, r = lid_outer_radius, center = false);
-            translate([0, 0, -lid_inner_height])
-              cylinder(h = lid_inner_height, r = lid_inner_radius, center = false);
+            cylinder(h = thickness, r = outer_radius, center = false);
+            translate([0, 0, -thickness])
+              cylinder(h = thickness, r = inner_radius, center = false);
         };
-        translate([-lid_text_size * 2.5, -lid_text_size * 0.5, lid_outer_height - lid_text_depth]) linear_extrude(height = lid_text_depth, center = false) text(text = lid_text_id, font = font_name, size = lid_text_size);
+        translate([-lid_text_size * 2.5, -lid_text_size * 0.5, thickness - lid_text_depth]) linear_extrude(height = lid_text_depth + 1, center = false) text(text = lid_text_id, font = font_name, size = lid_text_size);
     }
-}
-
-module bucket_and_lid() {
-    // bucket without lid
-    translate([0, 0, half_drum_height]) bucket_without_lid();
-
-    // lid
-    translate([inner_radius * 2, 0, lid_inner_height]) bucket_lid();
 }
 
 // show bucket and lid
-bucket_and_lid();
+bucket_and_lid(outer_radius_bkt, height_bkt, thickness_bkt);
