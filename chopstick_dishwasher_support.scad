@@ -23,7 +23,7 @@ module chopstick_base() {
                 translate([i * 7, j * 7, 0])
                 cylinder(h=height, r=1.5, center=true);
                 };
-            translate([0, 0, height * upper_depth_percentage])
+            translate([0, 0, height * (1 - upper_depth_percentage)])
             inner_cube();      
             translate([0, 0, - height * (1 - lower_depth_percentage)])
             inner_cube();                
