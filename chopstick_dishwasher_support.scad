@@ -43,6 +43,7 @@ module chopstick_base() {
     translate([-leg_x, leg_y, leg_z]) leg(leg_height, leg_radius);
     translate([leg_x, -leg_y, leg_z]) leg(leg_height, leg_radius);
     translate([-leg_x, -leg_y, leg_z]) leg(leg_height, leg_radius);
+    translate([0, 0, leg_z]) leg(leg_height, leg_radius);
 }
 
 chopstick_base();
