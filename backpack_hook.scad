@@ -30,6 +30,12 @@ module ring(ir, w, th)
        }
 }
 
+module ring_with_support(ir, w, th) {
+    ring(ir, w, th);
+    translate([0, ir+w/2, th/5]) cylinder(h = th, r = w/3, center = false);
+    translate([0, -ir-w/2, th/5]) cylinder(h = th, r = w/3, center = false);
+}
+
 // w: width of the ring outlet
 module outlet(w)
 {
@@ -41,12 +47,12 @@ module outlet(w)
 // w: ring width
 // th: thickness
 // ow: outlet width
-module ring_with_outlet(dx, dy, ir, w, th, ow)
+module ring_with_support_and_outlet(dx, dy, ir, w, th, ow)
 { 
     translate([dx,dy,0])
     rotate([0,0,15])
     difference() {
-        ring(ir, w, th);
+        ring_with_support(ir, w, th);
         translate([ir+w/2, 0, th/2])
         cube([w+1, ow, th+1], center = true);
     }
@@ -61,17 +67,18 @@ module hook(w, len, ir, ang, th)
 {
     translate([-ir-w,0,0])cube([w,len,th]);
     difference(){
-        ring(ir, w, th);
-        rotate([0,0,ang])cube([2.5*ir,2*ir,th+1]);
-        translate([-2*ir,0,0])cube([ir*2,ir*2,th+1]);
+        ring_with_support(ir, w, th);
+        rotate([0,0,ang])cube([2.5*ir,2*ir,th * 7/5]);
+        translate([-2*ir,0,0])cube([ir*2,ir*2,th * 7/5]);
     }
     rotate([0,0,ang])translate([ir+w/2,0,0])cylinder(d=w,h=th);
 
 }
 
+
 module main()
 {
-    ring_with_outlet(0, 0, $rir, $rw, $rth, $row);
+    ring_with_support_and_outlet(0, 0, $rir, $rw, $rth, $row);
     translate([-$hir-$hw/2, $hlen+$rir, 0])
     rotate([0, 0, 180])
     hook($hw, $hlen, $hir, $hangle, $th);
