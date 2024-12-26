@@ -1,0 +1,35 @@
+name: "Sanity check"
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-stl:
+    name: "Build STL"
+    strategy:
+      matrix:
+        os: [ ubuntu-24.04 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4.1.1
+      - name: "STL build"
+        run: |
+          set -euxo pipefail
+          cd ${{ github.workspace }}
+          sudo apt update
+          sudo apt install -y openscad
+          openscad --version
+          mkdir -p build_out
+          for i in *.scad; do
+            filename_without_extension=$(basename "$i" .scad)
+            echo "Building STL from $i"
+            openscad --export-format binstl -o build_out/"${filename_without_extension}".stl "$i"
+          done
+          ls -l *.stl
+
