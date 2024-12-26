@@ -25,8 +25,11 @@ jobs:
           sudo apt update
           sudo apt install -y openscad
           openscad --version
-          for i in *.scad: do
-            openscad --export-format binstl -o ${i%.scad}.stl "$i"
+          mkdir -p build_out
+          for i in *.scad; do
+            filename_without_extension=$(basename "$i" .scad)
+            echo "Building STL from $i"
+            openscad --export-format binstl -o build_out/"${filename_without_extension}".stl "$i"
           done
           ls -l *.stl
 
