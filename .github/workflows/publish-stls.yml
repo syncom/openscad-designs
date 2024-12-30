@@ -1,0 +1,44 @@
+# Build STLs and publish them to GitHub Releases
+name: 'STL Build and Release'
+on:
+  push:
+    branches:
+      - 'master'
+jobs:
+  publish-stls:
+    name: 'Publish STLs'
+    strategy:
+      matrix:
+        os: [ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4.1.1
+      - name: "Install OpenSCAD"
+        run: |
+          set -euxo pipefail
+          cd ${{ github.workspace }}
+          sudo apt update
+          sudo apt install -y openscad
+          openscad --version
+      - name: 'STL build'
+        run: |
+          set -euxo pipefail
+          cd ${{ github.workspace }}
+          mkdir -p build_out
+          for i in *.scad; do
+            filename_without_extension=$(basename "$i" .scad)
+            echo "Building STL from $i"
+            openscad --export-format binstl -o build_out/"${filename_without_extension}".stl "$i"
+          done
+          ls -l build_out/*.stl
+      - name: 'Release to GitHub Releases'
+        # v1.11.1
+        uses: ncipollo/release-action@4c75f0f2e4ae5f3c807cf0904605408e319dcaac
+        with:
+          tag: stl
+          name: 'STL Exports'
+          allowUpdates: true
+          generateReleaseNotes: false
+          artifacts: "build_out/*.stl"
+          token: ${{ secrets.GITHUB_TOKEN }}

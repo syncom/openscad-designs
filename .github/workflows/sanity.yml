@@ -31,5 +31,4 @@ jobs:
             echo "Building STL from $i"
             openscad --export-format binstl -o build_out/"${filename_without_extension}".stl "$i"
           done
-          ls -l *.stl
-
+          ls -l build_out/*.stl
