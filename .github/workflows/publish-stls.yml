@@ -21,12 +21,21 @@ jobs:
           sudo apt update
           sudo apt install -y openscad
           openscad --version
+      - name: 'Get all changed OpenScad files'
+        id: changed-scad-files
+        # v45.0.5
+        uses: tj-actions/changed-files@bab30c2299617f6615ec02a68b9a40d10bd21366
+        with:
+          files: '**.scad'
       - name: 'STL build'
+        if: steps.changed-scad-files.outputs.any_changed == 'true'
+        env:
+          CHANGED_SCAD_FILES: ${{ steps.changed-scad-files.outputs.all_changed_files }}
         run: |
           set -euxo pipefail
           cd ${{ github.workspace }}
           mkdir -p build_out
-          for i in *.scad; do
+          for i in ${CHANGED_SCAD_FILES}; do
             filename_without_extension=$(basename "$i" .scad)
             echo "Building STL from $i"
             openscad --export-format binstl -o build_out/"${filename_without_extension}".stl "$i"
